@@ -10,7 +10,7 @@ round_over = False
 round = 0
 moves = 0
 
-# Draw the board using a list generator
+# Data representation for the board using a list generator
 board = [[0] * 5 for i in range(5)]
 board[2][2] = 'x'
 
@@ -52,7 +52,6 @@ def play_card(player, deck, round):
         else:
             board[col_pos][row_pos] = card
             play_success = True
-            return # Should this return true?
 
 def is_play_valid(col_pos, row_pos):
     # Each play must be on an open spot that is not the board center (pos[B2])
@@ -60,11 +59,8 @@ def is_play_valid(col_pos, row_pos):
     row_pos = row_pos
     assert board[col_pos][row_pos] == 0
     assert col_pos != 2 or row_pos != 2
-    return
-
 
 while not round_over:
-
     # P1
     play_card('P1', p1deck, round)
     # print('adding move')
