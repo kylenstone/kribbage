@@ -104,7 +104,7 @@ def load_image(card):
     fullname = card.value+"_"+card.suit.lower()+".png"
     dirname = os.path.join('assets/cards', fullname)
     try:
-        image = pygame.image.load(dirname).convert()
+        image = pygame.transform.scale(pygame.image.load(dirname),(75, 108)).convert()
     except pygame.error as message:
         print('Cannot load image')
         raise SystemExit(message)
@@ -126,15 +126,16 @@ while not round_over:
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
-        # elif event.type == pygame.MOUSEBUTTONDOWN:
-        #     mouse_pos = pygame.mouse.get_pos()
-        #     if event.button == 1:
-        #         print("mouse event")
-        #         for area in cardarea:
-        #             if cardarea[area].collidepoint(mouse_pos):
-        #                 print("card goes here")
-        #                 play_card(pos) - play card from hand to cardarea[area]
-        #       check if valid move?
+        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                print("debug: mouse click")
+                mouse_pos = pygame.mouse.get_pos()
+                cardareacounter = 0
+                for card in cardarea:
+                    if card.collidepoint(mouse_pos):
+                        print(f'debug: collision at {card}')
+                        # TODO: check if valid move?
+                        moveloc = card.x, card.y
+                        screen.blit(p1decklist.pop()[2], moveloc)
 
     # # P1
     # play_card('P1', p1deck, round)
