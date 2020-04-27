@@ -1,23 +1,10 @@
 import pydealer as dealer
+# pydealer is used to generate game objects.  Docs: https://pydealer.readthedocs.io/en/latest/usage.html#install-uninstall-with-pip
 import pygame
 from pygame.locals import *
 import os, sys
 import game_events as events
 import game_setup as setup
-
-# Instantiate the game
-
-round_over = False
-round = 0
-moves = 0
-
-
-# Deal out cards, including card at center of board.
-deck = dealer.Deck()
-deck.shuffle()
-p1deck = deck.deal(12)
-p2deck = deck.deal(12)
-ctrcard = deck.deal(1)
 
 # Initialize screen
 pygame.init()
@@ -31,30 +18,33 @@ bg = pygame.Surface(screen.get_size()).convert()
 bg.fill([53, 101, 77])
 screen.blit(bg, (0, 0))
 
+# Deal out cards, including card at center of board.  NOTE: currently deals only one hand.
+deck = dealer.Deck()
+deck.shuffle()
+p1deck = deck.deal(12)
+p2deck = deck.deal(12)
+ctrcard = deck.deal(1)
+
 # Set up the game
 cardarea = setup.draw_card_placeholders(screen)
 ctrcardlist = setup.draw_center_card(ctrcard)
+playcount = 0
+moves = 0
+round_over = False
 
-
-# Label and draw player deck
+# Label and draw player decks
 font = pygame.font.Font(None, 28)
-text = font.render("Player 1 deck - click board to place card", 1, (10, 10, 10))
+text = font.render("Player 1", 1, (10, 10, 10))
 textpos = text.get_rect()
 textpos.x, textpos.y = 750, 100
 screen.blit(text, textpos)
 
-p1deckrect = Rect(800, 200, 75, 108)
-p1deckimg = pygame.transform.scale(pygame.image.load(os.path.join('assets/cards', '2_clubs.png')),
-                                    (75, 108)).convert()
+p1datadeck = setup.build_datadeck(p1deck, (800, 200))
+p2datadeck = setup.build_datadeck(p2deck, (800, 600))
 
-
-
-p1decklist = []
-loop_pos = 0
-for card in p1deck:
-    tempimg, temprect = setup.load_image(p1deck[loop_pos])
-    p1decklist.append((p1deck[loop_pos], temprect, tempimg))
-    loop_pos+=1
+#Render the first images in deck
+screen.blit(p1datadeck[0][2], (p1datadeck[0][1].x, p1datadeck[0][1].y))
+screen.blit(p2datadeck[0][2], (p2datadeck[0][1].x, p2datadeck[0][1].y))
 
 # Event loop
 while not round_over:
@@ -71,7 +61,8 @@ while not round_over:
                         print(f'debug: collision at {card}')
                         # TODO: check if valid move?
                         moveloc = card.x, card.y
-                        screen.blit(p1decklist.pop()[2], moveloc)
+                        screen.blit(p1datadeck.pop(0)[2], moveloc)
+                        screen.blit(p1datadeck[0][2], (p1datadeck[0][1].x, p1datadeck[0][1].y))
 
     # # P1
     # play_card('P1', p1deck, round)
@@ -92,7 +83,6 @@ while not round_over:
     #     draw_board()
 
     screen.blit(ctrcardlist[2], ctrcardlist[1])
-    screen.blit(p1deckimg, p1deckrect)
 
     pygame.display.update()
 

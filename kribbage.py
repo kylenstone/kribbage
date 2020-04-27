@@ -1,7 +1,7 @@
 import pydealer as dealer
-import string
+# pydealer is used to generate game objects.  Docs: https://pydealer.readthedocs.io/en/latest/usage.html#install-uninstall-with-pip
 
-# pydealer docs: https://pydealer.readthedocs.io/en/latest/usage.html#install-uninstall-with-pip
+import string
 
 # Instantiate the game
 deck = dealer.Deck()

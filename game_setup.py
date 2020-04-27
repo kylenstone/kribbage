@@ -35,3 +35,19 @@ def load_image(card):
         print('Cannot load image')
         raise SystemExit(message)
     return image, image.get_rect()
+
+def build_datadeck(deck, loc=None):
+    # Takes a Deck() object and returns fully constructed datadeck
+    datadeck = []
+    loop_pos = 0
+    try:
+        if loc is None:
+            loc = (0, 0)
+        for card in deck:
+            tempimg, temprect = load_image(deck[loop_pos])
+            temprect.x, temprect.y = loc
+            datadeck.append((deck[loop_pos], temprect, tempimg))
+            loop_pos += 1
+    except ValueError:
+        print('debug: loc must be in (x,y) format')
+    return datadeck
