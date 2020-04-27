@@ -6,18 +6,18 @@ import pydealer
 def draw_card_placeholders(screen):
     # Declare color variables
     BLACK = (0, 0, 0)
-
-    # Draw 25 cardareas on the board
+    # Draw 25 cardareas on the board.
+    # Each cardarea is a list with two parts, its Rect shape and a bool tracking if play has happened here.
     cardarea = []
     y_pos = 200
     for x in range(5):
         for y in range(5):
-            cardarea.append(pygame.draw.rect(screen, BLACK, [(x + 1) * 120, (y + 1) * 120, 75, 108], 1))
+            cardarea.append([pygame.draw.rect(screen, BLACK, [(x + 1) * 120, (y + 1) * 120, 75, 108], 1), False])
             y_pos += 120
+    cardarea[12][1] = True # Disallow play at ctrcard
     return cardarea
 
 def draw_center_card(ctrcard):
-
     # Draw flipped card in center of board
     ctrcardimg = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'card_back.png')),
                                         (75, 108)).convert()

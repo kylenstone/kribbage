@@ -25,3 +25,7 @@ def test_build_datadeck():
     assert type(testdatadeck[0][0]) == pydealer.card.Card
     assert type(testdatadeck[0][1]) == pygame.Rect
     assert type(testdatadeck[0][2]) == pygame.Surface
+
+def test_play_turns():
+    p1hand = testdeck.deal(12)
+    p2hand = testdeck.deal(12)
