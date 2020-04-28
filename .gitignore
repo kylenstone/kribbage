@@ -5,4 +5,5 @@ kribbage
 __pycache__/
 *.py[cod]
 *$py.class
+.idea
 .ipynb_checkpoints/
