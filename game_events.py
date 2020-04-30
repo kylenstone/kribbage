@@ -19,3 +19,12 @@ def check_valid_play(cardarea, card):
 #     else:
 #         print("False")
 #     return datadeck
+
+# def render_to_gui(Rect, Surface):
+    # if Rect is newly created, simply blit Rect to location
+    # if Rect already exists, call Rect.move() then blit new location
+
+def reveal_center_card():
+    # Reveals the center card once the round is finished
+
+    return

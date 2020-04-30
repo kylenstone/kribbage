@@ -3,6 +3,28 @@ import pygame
 import pydealer
 
 
+def initialize_screen():
+    # Initialize screen
+    pygame.init()
+    pygame.display.set_caption("Killer Kribbage!")
+    width = 1100
+    height = 800
+    screen = pygame.display.set_mode((width, height))
+
+    # Draw background and blit to screen
+    bg = pygame.Surface(screen.get_size()).convert()
+    bg.fill([53, 101, 77])
+    screen.blit(bg, (0, 0))
+    return screen
+
+def create_hidden_hands(deck, hand_sizes):
+    # This could be extended to support four players w/ 6 card deck each!
+    hands = []
+    for i in hand_sizes:
+        hands.append(deck.deal(i))
+    return hands
+
+
 def draw_card_placeholders(screen):
     # Declare color variables
     BLACK = (0, 0, 0)
@@ -17,14 +39,6 @@ def draw_card_placeholders(screen):
     cardarea[12][1] = True # Disallow play at ctrcard
     return cardarea
 
-def draw_center_card(ctrcard):
-    # Draw flipped card in center of board
-    ctrcardimg = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'card_back.png')),
-                                        (75, 108)).convert()
-    ctrcardrect = ctrcardimg.get_rect()
-    ctrcardrect.x, ctrcardrect.y = 360, 360
-    ctrcardlist = [ctrcard, ctrcardrect, ctrcardimg]
-    return ctrcardlist
 
 def load_image(card):
     fullname = card.value.lower()+"_"+card.suit.lower()+".png"
@@ -35,6 +49,21 @@ def load_image(card):
         print('Cannot load image')
         raise SystemExit(message)
     return image, image.get_rect()
+
+
+def load_center_card_images(center_card):
+    # Draws center card in center of playing board
+    center_card_face = load_image(center_card)
+    center_card_back = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'card_back.png')),
+                                        (75, 108)).convert()
+    return center_card_face, center_card_back
+
+
+def render_center_card(screen, center_card):
+    # @TODO This function should become generic "render_card"
+    center_card_face, center_card_back = load_center_card_images(center_card)
+    screen.blit(center_card_back, (360, 360))
+    return center_card_face, center_card_back
 
 def build_datadeck(deck, loc=None):
     # Takes a Deck() object and returns fully constructed datadeck
