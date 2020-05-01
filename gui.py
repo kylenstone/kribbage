@@ -23,10 +23,10 @@ round_over = False
 game_over = False
 
 cardarea = setup.draw_card_placeholders(screen)
-center_card_face, center_card_back = setup.render_center_card(screen, center_card)
+center_card = setup.render_card(screen, center_card, (360, 360), face_up=0)
 
-p1datadeck = setup.build_datadeck(p1deck, (800, 200))
-p2datadeck = setup.build_datadeck(p2deck, (800, 600))
+# p1datadeck = setup.build_datadeck(p1deck, (800, 200))
+# p2datadeck = setup.build_datadeck(p2deck, (800, 600))
 
 # Render P1 and P2 labels to screen
 font = pygame.font.Font(None, 28)
@@ -36,8 +36,15 @@ screen.blit(p1label, (750, 100))
 screen.blit(p2label, (750, 500))
 
 # Render P1 and P2 decks to screen
-screen.blit(p1datadeck[0][2], (p1datadeck[0][1].x, p1datadeck[0][1].y))
-screen.blit(p2datadeck[0][2], (p2datadeck[0][1].x, p2datadeck[0][1].y))
+p1_top_of_deck = p1deck.cards[0]
+p1_deck_xy_location = 800, 200
+p1_deck_surf = setup.render_card(screen, p1_top_of_deck, (p1_deck_xy_location))
+p2_top_of_deck = p2deck.cards[0]
+p2_deck_xy_location = 800, 600
+p2_deck_surf = setup.render_card(screen, p2_top_of_deck, (p2_deck_xy_location))
+
+# screen.blit(p1datadeck[0][2], (p1datadeck[0][1].x, p1datadeck[0][1].y))
+# screen.blit(p2datadeck[0][2], (p2datadeck[0][1].x, p2datadeck[0][1].y))
 
 # Event loop
 while not game_over:
@@ -48,29 +55,29 @@ while not game_over:
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pos = pygame.mouse.get_pos()
                 # print("debug: mouse click")
-                for card in cardarea:
-                    if card[0].collidepoint(mouse_pos):
-                        if game_events.check_valid_play(cardarea, card):
-                            print(f'debug: playing card at {card[0]}')
-                            moveloc = card[0].x, card[0].y
-                            if p1turn:
-                                played_card = p1datadeck.pop(0)
-                                if len(p1datadeck) > 0:
-                                    screen.blit(p1datadeck[0][2], (p1datadeck[0][1].x, p1datadeck[0][1].y))
-                                p1turn = False
-                            else:
-                                played_card = p2datadeck.pop(0)
-                                if len(p2datadeck) > 0:
-                                    screen.blit(p2datadeck[0][2], (p2datadeck[0][1].x, p2datadeck[0][1].y))
-                                else:
-                                    round_over = True
-                                p1turn = True
-                            screen.blit(played_card[2], moveloc) #Blit played card to new location
-                            card[1] = True  # Set is_card_played_here to True
-                            print('Your turn P1') if p1turn else ('Your turn P2')
-                            print(f'debug: {cardarea}')
-                            print(f'debug: P1 cards left: {len(p1datadeck)}')
-                            print(f'debug: P2 cards left: {len(p2datadeck)}')
+                # for card in cardarea:
+                #     if card[0].collidepoint(mouse_pos):
+                #         if game_events.check_valid_play(cardarea, card):
+                #             print(f'debug: playing card at {card[0]}')
+                #             moveloc = card[0].x, card[0].y
+                #             if p1turn:
+                #                 played_card = p1datadeck.pop(0)
+                #                 if len(p1datadeck) > 0:
+                #                     screen.blit(p1datadeck[0][2], (p1datadeck[0][1].x, p1datadeck[0][1].y))
+                #                 p1turn = False
+                #             else:
+                #                 played_card = p2datadeck.pop(0)
+                #                 if len(p2datadeck) > 0:
+                #                     screen.blit(p2datadeck[0][2], (p2datadeck[0][1].x, p2datadeck[0][1].y))
+                #                 else:
+                #                     round_over = True
+                #                 p1turn = True
+                #             screen.blit(played_card[2], moveloc) #Blit played card to new location
+                #             card[1] = True  # Set is_card_played_here to True
+                #             print('Your turn P1') if p1turn else ('Your turn P2')
+                #             print(f'debug: {cardarea}')
+                #             print(f'debug: P1 cards left: {len(p1datadeck)}')
+                #             print(f'debug: P2 cards left: {len(p2datadeck)}')
         if round_over:
             print("End of round")
 

@@ -40,45 +40,46 @@ def draw_card_placeholders(screen):
     return cardarea
 
 
-def load_image(card):
-    fullname = card.value.lower()+"_"+card.suit.lower()+".png"
-    dirname = os.path.join('assets/cards', fullname)
-    try:
-        image = pygame.transform.scale(pygame.image.load(dirname),(75, 108)).convert()
-    except pygame.error as message:
-        print('Cannot load image')
-        raise SystemExit(message)
-    return image, image.get_rect()
-
-
-def load_center_card_images(center_card):
-    # Draws center card in center of playing board
-    center_card_face = load_image(center_card)
-    center_card_back = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'card_back.png')),
+def load_card_image(card, face_up = 1):
+    # Associates images on disk with passed-in card.  Returns Surface object.
+    if not face_up:
+        try:
+            card_image = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'card_back.png')),
                                         (75, 108)).convert()
-    return center_card_face, center_card_back
+        except pygame.error as message:
+            print('Cannot load image')
+            raise SystemExit(message)
+    else:
+        try:
+            fullname = card.value.lower() + "_" + card.suit.lower() + ".png"
+            dirname = os.path.join('assets/cards', fullname)
+            card_image = pygame.transform.scale(pygame.image.load(dirname),(75, 108)).convert()
+        except pygame.error as message:
+            print('Cannot load image')
+            raise SystemExit(message)
+    return card_image
 
+def render_card(screen, card, loc, face_up = 1):
+    # card must be pydealer.card.Card, loc must be tuple(x, y)
+    if not face_up:
+        card_image = load_card_image(card, face_up = 0)
+    else:
+        card_image = load_card_image(card)
+    screen.blit(card_image, (loc))
+    return card_image
 
-def render_center_card(screen, center_card):
-    # @TODO This function should become generic "render_card"
-    center_card_face, center_card_back = load_center_card_images(center_card)
-    screen.blit(center_card_back, (360, 360))
-    return center_card_face, center_card_back
-
-def build_datadeck(deck, loc=None):
-    # Takes a Deck() object and returns fully constructed datadeck
-    datadeck = []
-    loop_pos = 0
-    try:
-        if loc is None:
-            loc = (0, 0)
-        for card in deck:
-            tempimg, temprect = load_image(deck[loop_pos])
-            temprect.x, temprect.y = loc
-            #  TODO Don't append list inside list - append different object
-            #  Should be "datadeck[1].surface", "datadeck[1].rect"
-            datadeck.append((deck[loop_pos], temprect, tempimg))
-            loop_pos += 1
-    except ValueError:
-        print('debug: loc must be in (x,y) format')
-    return datadeck
+# def build_datadeck(deck, loc=(0, 0)):
+#     # Takes a Deck() object and returns fully constructed datadeck
+#     datadeck = []
+#     loop_pos = 0
+#     try:
+#         for card in deck:
+#             tempimg = render_card(screen, deck[loop_pos], (0, 0))
+#             temprect = tempimg.get_rect()
+#             #  TODO Don't append list inside list - append different object
+#             #  Should be "datadeck[1].surface", "datadeck[1].rect"
+#             datadeck.append((deck[loop_pos], temprect, tempimg))
+#             loop_pos += 1
+#     except ValueError:
+#         print('debug: loc must be in (x,y) format')
+#     return datadeck
