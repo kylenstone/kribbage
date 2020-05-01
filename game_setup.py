@@ -1,6 +1,63 @@
 import os
 import pygame
-import pydealer
+from pydealer import card
+
+class PygameCard:
+    """
+    takes a pydealer.card.Card and adds image and rect properties for use with pygame
+    """
+    def __init__(self, card, loc):
+        self.card = card
+        self.suit = card.suit
+        self.value = card.value
+        self.image = load_card_image(card)
+        self.loc = loc
+        self.rect = self.image.get_rect().move(loc)
+
+class BoardSpot:
+    """
+    Spot on the board where a card can be played
+    """
+    def __init__(self, rect=None, is_open=True):
+        self.is_open = is_open
+        self.rect = rect
+
+
+def load_card_image(card, face_up=True):
+    # Associates images on disk with passed-in card.  Returns Surface object.
+    if face_up is False:
+        try:
+            card_image = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'card_back.png')),
+                                                (75, 108)).convert()
+        except pygame.error as message:
+            print('Cannot load image')
+            raise SystemExit(message)
+    else:
+        try:
+            fullname = card.value.lower() + "_" + card.suit.lower() + ".png"
+            dirname = os.path.join('assets/cards', fullname)
+            card_image = pygame.transform.scale(pygame.image.load(dirname), (75, 108)).convert()
+        except pygame.error as message:
+            print('Cannot load image')
+            raise SystemExit(message)
+    return card_image
+
+def render_card(screen, card, loc, face_up=True):
+    # passed card must be pygame.card.Card, loc must be tuple(x, y)
+    rendered_image = load_card_image(card, face_up)
+    screen.blit(rendered_image, loc)
+    return rendered_image
+
+
+def build_pygame_hand(hand, loc=(0,0)):
+    # Takes a pygame.deck.Deck and object and returns a hand of pygamecards
+    # Sets all cards to render at location
+    pygamehand = []
+    loop_pos = 0
+    for card in hand:
+            mycard = PygameCard(card, loc)
+            pygamehand.append(PygameCard(mycard, loc))
+    return pygamehand
 
 
 def initialize_screen():
@@ -17,69 +74,36 @@ def initialize_screen():
     screen.blit(bg, (0, 0))
     return screen
 
-def create_hidden_hands(deck, hand_sizes):
+def create_hands(deck, hand_sizes):
     # This could be extended to support four players w/ 6 card deck each!
     hands = []
     for i in hand_sizes:
         hands.append(deck.deal(i))
     return hands
 
+def create_board():
+    # Nested list comprehension
+    board = [[BoardSpot() for j in range(5)] for i in range(5)]
+    board[2][2].is_open = False # Disallow play at center spot
+    return board
 
-def draw_card_placeholders(screen):
+def flatten_matrix(matrix):
+    # Flattens matrix into a list
+    list = []
+    for sublist in matrix:
+        for val in sublist:
+            list.append(val)
+    return list
+
+def render_starting_board(screen, board):
     # Declare color variables
     BLACK = (0, 0, 0)
-    # Draw 25 cardareas on the board.
-    # Each cardarea is a list with two parts, its Rect shape and a bool tracking if play has happened here.
-    cardarea = []
     y_pos = 200
+
+    # Run a throwaway loop to draw rects on board
     for x in range(5):
         for y in range(5):
-            cardarea.append([pygame.draw.rect(screen, BLACK, [(x + 1) * 120, (y + 1) * 120, 75, 108], 1), False])
-            y_pos += 120 # TODO - can I delete this?
-    cardarea[12][1] = True # Disallow play at ctrcard
-    return cardarea
-
-
-def load_card_image(card, face_up = 1):
-    # Associates images on disk with passed-in card.  Returns Surface object.
-    if not face_up:
-        try:
-            card_image = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'card_back.png')),
-                                        (75, 108)).convert()
-        except pygame.error as message:
-            print('Cannot load image')
-            raise SystemExit(message)
-    else:
-        try:
-            fullname = card.value.lower() + "_" + card.suit.lower() + ".png"
-            dirname = os.path.join('assets/cards', fullname)
-            card_image = pygame.transform.scale(pygame.image.load(dirname),(75, 108)).convert()
-        except pygame.error as message:
-            print('Cannot load image')
-            raise SystemExit(message)
-    return card_image
-
-def render_card(screen, card, loc, face_up = 1):
-    # card must be pydealer.card.Card, loc must be tuple(x, y)
-    if not face_up:
-        card_image = load_card_image(card, face_up = 0)
-    else:
-        card_image = load_card_image(card)
-    screen.blit(card_image, (loc))
-    return card_image
-
-# def build_datadeck(deck, loc=(0, 0)):
-#     # Takes a Deck() object and returns fully constructed datadeck
-#     datadeck = []
-#     loop_pos = 0
-#     try:
-#         for card in deck:
-#             tempimg = render_card(screen, deck[loop_pos], (0, 0))
-#             temprect = tempimg.get_rect()
-#             #  TODO Don't append list inside list - append different object
-#             #  Should be "datadeck[1].surface", "datadeck[1].rect"
-#             datadeck.append((deck[loop_pos], temprect, tempimg))
-#             loop_pos += 1
-#     except ValueError:
-#         print('debug: loc must be in (x,y) format')
-#     return datadeck
+            rect = pygame.draw.rect(screen, BLACK, [(x + 1) * 120, (y + 1) * 120, 75, 108], 1)
+            board[x][y].rect = rect
+            y_pos += 120
+    return board

@@ -2,8 +2,8 @@ import os
 import pygame
 import game_setup as setup
 
-def check_valid_play(cardarea, card):
-    if card[1] == False:
+def check_valid_play(board, spot):
+    if spot.is_open == True:
         print('Move is valid')
         return True
     else:
