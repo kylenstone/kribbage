@@ -24,7 +24,5 @@ def check_valid_play(board, spot):
     # if Rect is newly created, simply blit Rect to location
     # if Rect already exists, call Rect.move() then blit new location
 
-def reveal_center_card():
-    # Reveals the center card once the round is finished
-
-    return
+def reveal_card_in_board_center(screen, ctrcard):
+    return setup.render_card(screen, ctrcard.card, (ctrcard.rect.x, ctrcard.rect.y))

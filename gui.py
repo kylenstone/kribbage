@@ -1,35 +1,37 @@
-import pydealer as dealer
-# pydealer is used to generate game objects.  Docs: https://pydealer.readthedocs.io/en/latest/usage.html#install-uninstall-with-pip
-import pygame
+# Library imports
+import pydealer as dealer # pygame generates card objects
+import pygame # pygame creates the GUI
 from pygame.locals import *
 import os, sys
+
+# Local imports
 import game_events as events
 import game_setup as setup
 
+#Initialize pygame
 screen = setup.initialize_screen()
 
 # Deal out cards, including card at center of board.
 deck = dealer.Deck()
 deck.shuffle()
 p1deck, p2deck = setup.create_hands(deck, (12, 12))
-center_card = deck.cards[0]
-center_pygamecard = setup.PygameCard(center_card, (360, 360))
+p1hand = setup.build_pygame_hand(p1deck, (800, 200))
+p2hand = setup.build_pygame_hand(p2deck, (800, 600))
 
-# Define some Board and Round state stuff
-playcount = 0
-moves = 0
-used_moves = []
+# Add a card to center of board
+temp = deck.get(0).pop() # Gets card from deck, converts from deque to card
+card_in_board_center = setup.PygameCard(temp, (360, 360))
+
+
+# Define Board and Round state stuff
+play_history = [] # TODO actually use this
 p1turn = True
 round_over = False
 game_over = False
 
-# Display round setup cards on screen
+# Initialize the round's cards on screen
 board = setup.render_starting_board(screen, setup.create_board())
-flat_board = setup.flatten_matrix(board)
-draw_center_card = setup.render_card(screen, center_pygamecard.card, center_pygamecard.loc, face_up=False)
-
-p1hand = setup.build_pygame_hand(p1deck, (800, 200))
-p2hand = setup.build_pygame_hand(p2deck, (800, 600))
+render_center_card = setup.render_card(screen, card_in_board_center.card, card_in_board_center.loc, face_up=False)
 
 # Render P1 and P2 labels to screen
 font = pygame.font.Font(None, 28)
@@ -42,6 +44,9 @@ screen.blit(p2label, (750, 500))
 draw_p1hand = setup.render_card(screen, p1hand[0].card, (800, 200))
 draw_p2hand = setup.render_card(screen, p2hand[0].card, (800, 600))
 
+# Flatten 5x5 card matrix for easier use in game loop
+flat_board = setup.flatten_matrix(board)
+
 # Event loop
 while not game_over:
     for event in pygame.event.get():
@@ -50,18 +55,15 @@ while not game_over:
             sys.exit()
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pos = pygame.mouse.get_pos()
-                print(f'debug: {mouse_pos}')
                 for spot in flat_board:
                     if spot.rect.collidepoint(mouse_pos):
-                        print(f'debug: {spot.rect.collidepoint(mouse_pos)}')
-                        print("click action w/ collision")
                         if events.check_valid_play(flat_board, spot):
-                            print(f'click action: playing card at {spot}')
+                            print(f'debug click action: playing card at {spot}')
                             moveloc = spot.rect.x, spot.rect.y
                             if p1turn:
                                 played_card = p1hand.pop(0)
-                                setup.render_card(screen, played_card, moveloc)
                                 #TODO: when using pop() we may need to update other data structures too
+                                setup.render_card(screen, played_card, moveloc)
                                 if len(p1hand) > 0:
                                     setup.render_card(screen, p1hand[0], p1hand[0].rect)
                                 p1turn = False
@@ -71,6 +73,7 @@ while not game_over:
                                 if len(p2hand) > 0:
                                     setup.render_card(screen, p2hand[0], p2hand[0].rect)
                                 else:
+                                    events.reveal_card_in_board_center(screen, card_in_board_center)
                                     round_over = True
                                 p1turn = True
                             spot.is_open=False  # Set is_card_played_here to True
