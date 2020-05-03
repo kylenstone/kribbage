@@ -1,13 +1,16 @@
+#Library imports
 import os
 import pygame
+
+#Local imports
 import game_setup as setup
 
-def check_valid_play(board, spot):
+def check_valid_play(spot):
     if spot.is_open == True:
         print('Move is valid')
         return True
     else:
-        print('Invalid move, cannot play here')  # TODO - special alert for center card
+        print('Invalid move, cannot play here')
         return False
 
 # def play_move(card, loc):

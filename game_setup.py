@@ -1,6 +1,8 @@
+# Library imports
 import os
 import pygame
 from pydealer import card
+
 
 class PygameCard:
     """
@@ -14,6 +16,7 @@ class PygameCard:
         self.loc = loc
         self.rect = self.image.get_rect().move(loc)
 
+
 class BoardSpot:
     """
     Spot on the board where a card can be played
@@ -23,12 +26,26 @@ class BoardSpot:
         self.rect = rect
 
 
+def initialize_screen():
+    # Initialize screen
+    pygame.init()
+    pygame.display.set_caption("Killer Kribbage!")
+    width = 1100
+    height = 800
+    screen = pygame.display.set_mode((width, height))
+
+    # Draw background and blit to screen
+    bg = pygame.Surface(screen.get_size()).convert()
+    bg.fill([53, 101, 77])
+    screen.blit(bg, (0, 0))
+    return screen
+
+
 def load_card_image(card, face_up=True):
     # Associates images on disk with passed-in card.  Returns Surface object.
     if face_up is False:
         try:
-            card_image = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'card_back.png')),
-                                                (75, 108)).convert()
+            card_image = pygame.transform.scale(pygame.image.load(os.path.join('assets', 'card_back.png')),(75, 108)).convert()
         except pygame.error as message:
             print('Cannot load image')
             raise SystemExit(message)
@@ -41,6 +58,7 @@ def load_card_image(card, face_up=True):
             print('Cannot load image')
             raise SystemExit(message)
     return card_image
+
 
 def render_card(screen, card, loc, face_up=True):
     # passed card must be pygame.card.Card, loc must be tuple(x, y)
@@ -60,20 +78,6 @@ def build_pygame_hand(hand, loc=(0,0)):
     return pygamehand
 
 
-def initialize_screen():
-    # Initialize screen
-    pygame.init()
-    pygame.display.set_caption("Killer Kribbage!")
-    width = 1100
-    height = 800
-    screen = pygame.display.set_mode((width, height))
-
-    # Draw background and blit to screen
-    bg = pygame.Surface(screen.get_size()).convert()
-    bg.fill([53, 101, 77])
-    screen.blit(bg, (0, 0))
-    return screen
-
 def create_hands(deck, hand_sizes):
     # This could be extended to support four players w/ 6 card deck each!
     hands = []
@@ -81,21 +85,12 @@ def create_hands(deck, hand_sizes):
         hands.append(deck.deal(i))
     return hands
 
-def create_board():
-    # Nested list comprehension
+
+def render_starting_board(screen):
+    # Create the board object as 5x5 matrix using nested list comprehension
     board = [[BoardSpot() for j in range(5)] for i in range(5)]
     board[2][2].is_open = False # Disallow play at center spot
-    return board
 
-def flatten_matrix(matrix):
-    # Flattens matrix into a list
-    list = []
-    for sublist in matrix:
-        for val in sublist:
-            list.append(val)
-    return list
-
-def render_starting_board(screen, board):
     # Declare color variables
     BLACK = (0, 0, 0)
     y_pos = 200
@@ -107,3 +102,12 @@ def render_starting_board(screen, board):
             board[x][y].rect = rect
             y_pos += 120
     return board
+
+
+def flatten_matrix(matrix):
+    # Flattens matrix into a list
+    list = []
+    for sublist in matrix:
+        for val in sublist:
+            list.append(val)
+    return list

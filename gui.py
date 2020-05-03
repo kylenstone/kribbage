@@ -22,7 +22,6 @@ p2hand = setup.build_pygame_hand(p2deck, (800, 600))
 temp = deck.get(0).pop() # Gets card from deck, converts from deque to card
 card_in_board_center = setup.PygameCard(temp, (360, 360))
 
-
 # Define Board and Round state stuff
 play_history = [] # TODO actually use this
 p1turn = True
@@ -30,7 +29,7 @@ round_over = False
 game_over = False
 
 # Initialize the round's cards on screen
-board = setup.render_starting_board(screen, setup.create_board())
+board = setup.render_starting_board(screen)
 render_center_card = setup.render_card(screen, card_in_board_center.card, card_in_board_center.loc, face_up=False)
 
 # Render P1 and P2 labels to screen
@@ -44,7 +43,7 @@ screen.blit(p2label, (750, 500))
 draw_p1hand = setup.render_card(screen, p1hand[0].card, (800, 200))
 draw_p2hand = setup.render_card(screen, p2hand[0].card, (800, 600))
 
-# Flatten 5x5 card matrix for easier use in game loop
+# Flatten 5x5 card matrix so we can use list-style iteration in game loop below
 flat_board = setup.flatten_matrix(board)
 
 # Event loop
@@ -57,7 +56,7 @@ while not game_over:
                 mouse_pos = pygame.mouse.get_pos()
                 for spot in flat_board:
                     if spot.rect.collidepoint(mouse_pos):
-                        if events.check_valid_play(flat_board, spot):
+                        if events.check_valid_play(spot):
                             print(f'debug click action: playing card at {spot}')
                             moveloc = spot.rect.x, spot.rect.y
                             if p1turn:
