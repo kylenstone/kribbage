@@ -91,9 +91,6 @@ def initialize_round():
     r = Round(game.players, deck, [p1.hand, p2.hand], card_in_board_center, board)
     return r
 
-# Initialize pygame
-screen = setup.initialize_screen()
-
 # Create players.
 players = create_players()
 
@@ -104,30 +101,33 @@ game = KribbageGame(players)
 p1 = game.players[0]
 p2 = game.players[1]
 
-r = initialize_round()
 
-
-# Define Board and Round state stuff
-p1turn = True
-
-
-# Render P1 and P2 labels to screen
-font = pygame.font.Font(None, 28)
-p1label = font.render("Player 1", 1, (10, 10, 10))
-p2label = font.render("Player 2", 1, (10, 10, 10))
-screen.blit(p1label, (750, 100))
-screen.blit(p2label, (750, 500))
-
-# Render P1 and P2 decks to screen
-draw_p1hand = setup.render_card(screen, p1.hand[0], (800, 200))
-draw_p2hand = setup.render_card(screen, p2.hand[0], (800, 600))
-
-# Flatten 5x5 card matrix so we can use list-style iteration in game loop below
-flat_board = setup.flatten_matrix(r.board)
-
-
-# Event loop
+# Main event loop
 while not game.game_over:
+
+    # Initialize pygame
+    screen = setup.initialize_screen()
+
+    # Initialize the round
+    r = initialize_round()
+
+    # Define Board and Round state stuff
+    p1turn = True
+
+    # Render P1 and P2 labels to screen
+    font = pygame.font.Font(None, 28)
+    p1label = font.render("Player 1", 1, (10, 10, 10))
+    p2label = font.render("Player 2", 1, (10, 10, 10))
+    screen.blit(p1label, (750, 100))
+    screen.blit(p2label, (750, 500))
+
+    # Render P1 and P2 decks to screen
+    draw_p1hand = setup.render_card(screen, p1.hand[0], (800, 200))
+    draw_p2hand = setup.render_card(screen, p2.hand[0], (800, 600))
+
+    # Flatten 5x5 card matrix so we can use list-style iteration in game loop below
+    flat_board = setup.flatten_matrix(r.board)
+
     while not r.round_over:  # TODO deal with this
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -147,23 +147,16 @@ while not game.game_over:
                                 spot.is_open=False  # Set is_card_played_here to True
                 else:
                     print('Time to reveal center card')
-                    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                        setup.render_card(screen, r.card_in_board_center.card, (360, 360), face_up=True)
-                        button = pygbutton.PygButton((350, 50, 100, 40), 'Next Round')
-                        button.draw(screen)
+                    setup.render_card(screen, r.card_in_board_center.card, (360, 360), face_up=True)
+                    button = pygbutton.PygButton((350, 50, 100, 40), 'Next Round')
+                    button.draw(screen)
+                    print('debug')
+                    if button.rect.collidepoint(mouse_pos):
+                        print("Clicked new round button")
+                        # Start a new round
                         r.round_over = True
-
+                        print('still here')
+        # Event updater within round:
         pygame.display.update()
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            pygame.quit()
-            sys.exit()
-        elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            mouse_pos = pygame.mouse.get_pos()
-            if button.rect.collidepoint(mouse_pos):
-                print("Clicked new round button")
-                # Start a new round
-                screen = setup.initialize_screen()
-                r = initialize_round()
-
+    # Event updater within game:
     pygame.display.update()
