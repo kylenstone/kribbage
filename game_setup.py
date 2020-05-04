@@ -1,7 +1,7 @@
 # Library imports
 import os
 import pygame
-from pydealer import card
+from pydealer import card, deck as dealer
 
 
 class PygameCard:
@@ -39,6 +39,25 @@ def initialize_screen():
     bg.fill([53, 101, 77])
     screen.blit(bg, (0, 0))
     return screen
+
+
+
+def render_starting_board(screen):
+    # Create the board object as 5x5 matrix using nested list comprehension
+    board = [[BoardSpot() for j in range(5)] for i in range(5)]
+    board[2][2].is_open = False  # Disallow play at center spot
+
+    # Declare color variables
+    BLACK = (0, 0, 0)
+    y_pos = 200
+
+    # Run a throwaway loop to draw rects on board
+    for x in range(5):
+        for y in range(5):
+            rect = pygame.draw.rect(screen, BLACK, [(x + 1) * 120, (y + 1) * 120, 75, 108], 1)
+            board[x][y].rect = rect
+            y_pos += 120
+    return board
 
 
 def load_card_image(card, face_up=True):
@@ -84,24 +103,6 @@ def create_hands(deck, hand_sizes):
     for i in hand_sizes:
         hands.append(deck.deal(i))
     return hands
-
-
-def render_starting_board(screen):
-    # Create the board object as 5x5 matrix using nested list comprehension
-    board = [[BoardSpot() for j in range(5)] for i in range(5)]
-    board[2][2].is_open = False # Disallow play at center spot
-
-    # Declare color variables
-    BLACK = (0, 0, 0)
-    y_pos = 200
-
-    # Run a throwaway loop to draw rects on board
-    for x in range(5):
-        for y in range(5):
-            rect = pygame.draw.rect(screen, BLACK, [(x + 1) * 120, (y + 1) * 120, 75, 108], 1)
-            board[x][y].rect = rect
-            y_pos += 120
-    return board
 
 
 def flatten_matrix(matrix):

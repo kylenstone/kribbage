@@ -1,4 +1,4 @@
-#Library imports
+# Library imports
 import os
 import pygame
 

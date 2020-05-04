@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "c3a041d487560479b8b215f48fe219457e3899a4ceb875eb103a4813a1c25abe"
+            "sha256": "23be859c47cb8dfb8cb6b36b8c5ad24e7c3361b246376d103cb719209aa7c2b9"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -55,6 +55,13 @@
             ],
             "index": "pypi",
             "version": "==2.0.0.dev6"
+        },
+        "pygbutton": {
+            "hashes": [
+                "sha256:d8f8570f6f4a23f9312ee89cfd8f9b23a59c169b692122ec408ea8b62cbd7318"
+            ],
+            "index": "pypi",
+            "version": "==0.9.0"
         }
     },
     "develop": {}

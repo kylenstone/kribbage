@@ -8,6 +8,7 @@ verify_ssl = true
 [packages]
 pydealer = "*"
 pygame = "==2.0.0dev6"
+pygbutton = "*"
 
 [requires]
 python_version = "3.7"
